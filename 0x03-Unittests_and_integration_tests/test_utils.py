@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-""" Parameterize a unit test """
-from parameterized import parameterized
-from typing import Dict, Tuple, Union
-from utils import access_nested_map
+"""A module for testing the utils module.
+"""
 import unittest
+from typing import Dict, Tuple, Union
 from unittest.mock import patch, Mock
+from parameterized import parameterized
+
+from utils import (
+    access_nested_map,
+    get_json,
+    memoize,
+)
 
 
 class TestAccessNestedMap(unittest.TestCase):
-    """
-    Test access_nested_map method from utils module
-    """
+    """Tests the `access_nested_map` function."""
     @parameterized.expand([
         ({"a": 1}, ("a",), 1),
         ({"a": {"b": 2}}, ("a",), {"b": 2}),
@@ -41,17 +45,17 @@ class TestAccessNestedMap(unittest.TestCase):
 
 
 class TestGetJson(unittest.TestCase):
-    """ Test get_json method from utils module """
-    @parameterized.expamd([
-        test_url = "http://example.com", test_payload = {"payload": True}
-        test_url = "http://holberton.io", test_payload = {"payload": False}
+    """Tests the `get_json` function."""
+    @parameterized.expand([
+        ("http://example.com", {"payload": True}),
+        ("http://holberton.io", {"payload": False}),
     ])
     def test_get_json(
             self,
             test_url: str,
             test_payload: Dict,
-    ) -> None:
-        """ Test get_json output """
+            ) -> None:
+        """Tests `get_json`'s output."""
         attrs = {'json.return_value': test_payload}
         with patch("requests.get", return_value=Mock(**attrs)) as req_get:
             self.assertEqual(get_json(test_url), test_payload)
@@ -59,8 +63,7 @@ class TestGetJson(unittest.TestCase):
 
 
 class TestMemoize(unittest.TestCase):
-    """Tests the `memoize` method from utils module."""
-
+    """Tests the `memoize` function."""
     def test_memoize(self) -> None:
         """Tests `memoize`'s output."""
         class TestClass:
@@ -74,7 +77,7 @@ class TestMemoize(unittest.TestCase):
                 TestClass,
                 "a_method",
                 return_value=lambda: 42,
-        ) as memo_fxn:
+                ) as memo_fxn:
             test_class = TestClass()
             self.assertEqual(test_class.a_property(), 42)
             self.assertEqual(test_class.a_property(), 42)
